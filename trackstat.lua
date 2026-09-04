@@ -117,4 +117,46 @@ local function notif(msg, color)
         f.Size            = UDim2.new(0, 280, 0, 40)
         f.Position        = UDim2.new(1, -296, 0, 12)
         f.BackgroundColor3 = Color3.fromRGB(12, 8, 22)
-        f.BorderSizePi
+        f.BorderSizePixel = 0
+        f.ClipsDescendants = true
+        Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
+
+        local accent = Instance.new("Frame", f)
+        accent.Size             = UDim2.new(0, 3, 1, 0)
+        accent.BackgroundColor3 = color
+        accent.BorderSizePixel  = 0
+
+        local lbl = Instance.new("TextLabel", f)
+        lbl.Size              = UDim2.new(1, -14, 1, 0)
+        lbl.Position          = UDim2.new(0, 12, 0, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3        = Color3.fromRGB(218, 208, 240)
+        lbl.TextSize          = 12
+        lbl.Font              = Enum.Font.GothamMedium
+        lbl.Text              = msg
+        lbl.TextXAlignment    = Enum.TextXAlignment.Left
+        lbl.TextTruncate      = Enum.TextTruncate.AtEnd
+
+        game:GetService("Debris"):AddItem(g, 3.5)
+    end)
+end
+
+-- ── Main Loop ──
+notif("🟣 ThlongTracker đang khởi động...")
+task.wait(5)  -- chờ game load xong
+
+while true do
+    local ok, payload = pcall(collect)
+    if ok then
+        local sent, err = pcall(post, payload)
+        if sent then
+            local lv = tostring(payload.data.level)
+            notif("✅ Synced: " .. Player.Name .. "  Lv." .. lv)
+        else
+            notif("❌ Gửi thất bại — check URL", Color3.fromRGB(220, 50, 50))
+        end
+    else
+        notif("❌ Lỗi đọc data", Color3.fromRGB(220, 50, 50))
+    end
+    task.wait(60)  -- sync mỗi 60 giây
+end
